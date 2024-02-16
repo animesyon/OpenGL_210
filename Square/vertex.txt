@@ -1,0 +1,10 @@
+// vertex shader
+
+attribute vec3 v_vertex;
+
+uniform mat4 m_matrix;
+
+void main()
+{
+	gl_Position =  m_matrix * vec4(v_vertex, 1.0);
+}
