@@ -27,3 +27,10 @@
 #include <gl/gl.h>               // standard OpenGL functions
 #include <gl/glu.h>              // OpenGL utility library
 #include <gl/glext.h>            // OpenGL extension
+
+/*
+link these libs into the project
+
+opengl32.lib
+glu32.lib
+*/
