@@ -27,5 +27,9 @@
 #include <gl/glu.h>              // OpenGL utility library
 #include <gl/glext.h>            // OpenGL extension
 
+/*
+link these libs into the project
 
-// TODO: reference additional headers your program requires here
+opengl32.lib
+glu32.lib
+*/
