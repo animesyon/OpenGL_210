@@ -1,0 +1,10 @@
+// fragment shader
+
+uniform sampler2D sample;
+
+varying vec2 texture;
+
+void main()
+{
+	gl_FragColor = texture2D(sample, texture);
+}
