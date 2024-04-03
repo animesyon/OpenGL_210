@@ -122,25 +122,29 @@ void CModel::CreateVertexData(float width, float height, float **vertex, int *ve
 // create vertex buffer object
 void CModel::Create(float width, float height)
 {
-    float* vertex  = NULL;
-	short* index   = NULL;
+	float* vertex = NULL;
+	short* index = NULL;
 
-    // create data for vertex and index
-    CreateVertexData(width, height, &vertex, &vertex_size, &index, &index_size);
+	// create data for vertex and index
+	CreateVertexData(width, height, &vertex, &vertex_size, &index, &index_size);
 
 	// for vertex buffer
-    glGenBuffersARB(1, &id1);                                                                       // generate a buffer object
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, id1);                                                      // bind the buffer object
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB, vertex_size * sizeof(float), vertex, GL_STATIC_DRAW_ARB);  // copy vertex data to the buffer object
+	glGenBuffersARB(1, &id1);                                                                       // generate a buffer object
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, id1);                                                      // bind the buffer object
+	glBufferDataARB(GL_ARRAY_BUFFER_ARB, vertex_size * sizeof(float), vertex, GL_STATIC_DRAW_ARB);  // copy vertex data to the buffer object
+
+	// set vertex attribute
+	glVertexAttribPointerARB(LOC_VERTEX, coord_per_vertex, GL_FLOAT, GL_FALSE, stride, (GLvoid*)vertex_offset);
+	glEnableVertexAttribArrayARB(LOC_VERTEX);
 
 	// for index buffer
 	glGenBuffersARB(1, &id2);                                                                            // generate a buffer object
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, id2);                                                   // bind the buffer object
 	glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, index_size * sizeof(short), index, GL_STATIC_DRAW_ARB); // copy vertex data to the buffer object
 
-    // release memory
-    if(vertex != NULL) delete[] vertex;
-	if(index  != NULL) delete[] index;
+	// release memory
+	if (vertex != NULL) delete[] vertex;
+	if (index != NULL) delete[] index;
 }
 
 // delete buffer object
@@ -153,27 +157,16 @@ void CModel::Destroy()
 // draw a square composed by two triangles
 void CModel::Draw(float *matrix)
 {
-	    GLint loc_m;
+	GLint loc_m;
 
-		// bind the buffer object
-	    glBindBufferARB(GL_ARRAY_BUFFER_ARB, id1);
-	    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, id2);
+	loc_m = glGetUniformLocationARB(program, "m_matrix");
+	glUniformMatrix4fvARB(loc_m, 1, false, matrix);
 
-		// send matrix to a vertex shader
-	    loc_m = glGetUniformLocationARB(program, "m_matrix");
-	    glUniformMatrix4fvARB(loc_m, 1, false, matrix);
-
-		// send vertices to a vertex shader
-	    glVertexAttribPointerARB(LOC_VERTEX, coord_per_vertex, GL_FLOAT, GL_FALSE, stride, (GLvoid*)vertex_offset);
-
-		// draw two triangles
-	    glEnableVertexAttribArrayARB(LOC_VERTEX);
-		glDrawElements(GL_TRIANGLES, index_size, GL_UNSIGNED_SHORT, (GLvoid*)index_offset);
-	    glDisableVertexAttribArrayARB(LOC_VERTEX);
-
-		// unbind buffer object
-	    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-	    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, id1);
+	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, id2);
+	glDrawElements(GL_TRIANGLES, index_size, GL_UNSIGNED_SHORT, (GLvoid*)index_offset);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 }
 
 // put a program handle to be used
