@@ -55,7 +55,7 @@ void CModel::CreateVertexData(float **vertex, int *size, int *count)
 // create vertex buffer object
 void CModel::Create()
 {
-    float* vertex   = NULL;
+    float* vertex = NULL;
     int vertex_size = 0;
 
     // create vertex data
@@ -65,8 +65,12 @@ void CModel::Create()
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, id);                                                      // bind the buffer object
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, vertex_size * sizeof(float), vertex, GL_STATIC_DRAW_ARB); // copy vertex data to the buffer object 
 
+    // set vertex attribute
+    glVertexAttribPointerARB(LOC_VERTEX, coord_per_vertex, GL_FLOAT, GL_FALSE, stride, (GLvoid*)vertex_offset);
+    glEnableVertexAttribArrayARB(LOC_VERTEX);
+
     // release memory
-    if(vertex != NULL) delete[] vertex;
+    if (vertex != NULL) delete[] vertex;
 }
 
 // delete buffer object
@@ -78,25 +82,14 @@ void CModel::Destroy()
 // draw the triangle
 void CModel::Render(float *matrix)
 {
-	    GLint loc_m;
+    GLint loc_m;
 
-		// bind the buffer object
-	    glBindBufferARB(GL_ARRAY_BUFFER_ARB, id);
+    loc_m = glGetUniformLocationARB(program, "m_matrix");
+    glUniformMatrix4fvARB(loc_m, 1, false, matrix);
 
-		// send matrix to a vertex shader
-	    loc_m = glGetUniformLocationARB(program, "m_matrix");
-	    glUniformMatrix4fvARB(loc_m, 1, false, matrix);
-
-		// send vertices to a vertex shader
-	    glVertexAttribPointerARB(LOC_VERTEX, coord_per_vertex, GL_FLOAT, GL_FALSE, stride, (GLvoid*)vertex_offset);
-
-		// draw triangle
-	    glEnableVertexAttribArrayARB(LOC_VERTEX);
-	    glDrawArrays(GL_TRIANGLES, 0, vertex_count);
-	    glDisableVertexAttribArrayARB(LOC_VERTEX);
-
-		// unbind buffer object
-	    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, id);
+    glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 }
 
 // put a program handle to be used
